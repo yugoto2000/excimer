@@ -23,8 +23,8 @@
 #include "TVectorD.h"
 #include "TVector.h"
 #include "TString.h"
+//csv_read_test2_nc2_forwave入力数問題解決
 
-//csv_read_test2_nc2_forwave保存用nがうまくプリントできないし入力数が減る.ccをコピー
 //お気持ちtest２_nocomentでかなり良くなったけどもう少しフレキシブルにしつつコードの気持ち悪さを改善していこうという段階
 //1,if文の順番が気持ち悪いので改善ついでにfillのタイミングが気持ち悪いので改善
 
@@ -38,6 +38,7 @@
 //なんか無理だこれ、くぎれがエントリー数の切れ目と合わない。入力が少ない。
 //色々if文で条件を変えて切れ目を変えてみたけど無理だったので、解決方法をもさく、一つは、一個前のに戻ってやり直していく方法、
 //もう一個はエントリー数をうまいことプリントして変な箇所見つけること
+//i での条件分けを無くしたらうまく行った、多分ワイル文から一回でるのがよろしくない。
 
 const Int_t number_of_time = 10000; //１万とか
 
@@ -50,11 +51,15 @@ void csv_read_test(){
     
     Int_t event_number = 0;
     int tmpint = 20; //最初こいつには適当に7以上の数字が詰まっていますが、後から書き換えられます。
-    double temporaly[5] ={0,0,0,0,0}; //Score[][j]のカウンタ。一人分の名前、国語、英語、数学を入れていく。（０～３）
+    //Score[][j]のカウンタ。一人分の名前、国語、英語、数学を入れていく。（０～３）
    
-int n ;
+
     TFile *file = new TFile("file4.root","recreate"); //新規rootファイルを生成
     TTree *tree = new TTree("tree","tree");
+    
+    
+    int n ;
+    double temporaly[5] ={0,0,0,0,0};
     int real_event_number = 0;
     tree->Branch("event_number", &event_number);//
     //tree->Branch("n", &n);// 意味不
@@ -82,7 +87,7 @@ int n ;
     
     Int_t n=0;
         i=0;
-  while((getline(ifs, str) )&& i ==0)  // ファイルの中身を一行ずつ読み取る/・・以下やめてbreakで対応
+  while(getline(ifs, str) ) // ファイルの中身を一行ずつ読み取る/・・以下やめてbreakで対応
     {
         
        
@@ -168,10 +173,11 @@ int n ;
        // 次の人の配列に移る
         if(n==number_of_time){real_event_number = real_event_number + 1;}//これも気持ち悪いけど-2でいいと思う。,+1でOK最後まで回った数をカウントする。イベント数と同じかどうか確かめて//fillの後にこれ入れないとダメよ
        
-        if(n==number_of_time){
+        if(n==number_of_time-1){
             
             n = 0;
-            i = 300;//0以外ならなんでもいい　かなりダサい
+            event_number++;
+            //i = 300;//0以外ならなんでもいい　かなりダサい
         }else{
             n++;}
       j = 0;
